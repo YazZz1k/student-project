@@ -12,15 +12,14 @@ void Game::startGame()
 {
     isMove = false;
 
-    //разнести по функциям
-    //___init__WHITE
+
     for(int i=0; i<3; ++i)
         for(int j=0; j<8; ++j)
         {
             if((i+j)%2==0)
                 board.addChecker(new Checker(Checker::WHITE),j,7-i);
         }
-    //__INIT_BLACK
+
     for(int i=0; i<3; ++i)
         for(int j=0; j<8; ++j)
         {
@@ -48,7 +47,14 @@ void Game::pressedLeftMouse(sf::Vector2i mousePos)
 {
     BoardCoord coord = BoardCoord::convertToBoardCoord(mousePos);
 
-    if(board.isChecker(coord))
+    if(requiredTurn)
+    {
+        if( (coord.x == oldActiveCheckerPosition.x)&&(coord.y == oldActiveCheckerPosition.y) )
+        {
+            isMove = true;
+        }
+    }
+    else if(board.isChecker(coord))
     {
         activeChecker = board.getChecker(coord);
 
@@ -78,16 +84,46 @@ void Game::releasedLeftMouse(sf::Vector2i mousePos)
                 board.moveChecker(oldActiveCheckerPosition, coord);
                 passTurn();
                 break;
-            /*case QUEEN_TURN:
+            case CheckerBoard::QUEEN_TURN:
+                std::cout<<"QUEEN_TURN"<<std::endl;
                 board.moveChecker(oldActiveCheckerPosition, coord);
                 passTurn();
                 break;
-            case SIMPLE_KILL_TURN:
-                board.deleteChecker(
+            case CheckerBoard::SIMPLE_KILL_TURN:
+                std::cout<<"SIMPLE_KILL_TURN"<<std::endl;
+                board.deleteChecker(board.getCoordCheckerBetween(oldActiveCheckerPosition, coord));
                 board.moveChecker(oldActiveCheckerPosition, coord);
-                passTurn();
-            case QUEEN_KILL_TURN:
-            passTurn();*/
+
+                if(board.isThereRequerdTurnForChecker(coord))
+                {
+                    std::cout<<"REQURED_TURN"<<std::endl;
+                    requiredTurn = true;
+                    oldActiveCheckerPosition = coord;
+                }
+                else
+                {
+                    requiredTurn = false;
+                    passTurn();
+                }
+
+                break;
+            case CheckerBoard::QUEEN_KILL_TURN:
+                std::cout<<"QUEEN_KILL_TURN"<<std::endl;
+                board.deleteChecker(board.getCoordCheckerBetween(oldActiveCheckerPosition, coord));
+                board.moveChecker(oldActiveCheckerPosition, coord);
+
+                if(board.isThereRequerdTurnForChecker(coord))
+                {
+                    std::cout<<"REQURED_TURN"<<std::endl;
+                    requiredTurn = true;
+                    oldActiveCheckerPosition = coord;
+                }
+                else
+                {
+                    requiredTurn = false;
+                    passTurn();
+                }
+                break;
         }
     }
 

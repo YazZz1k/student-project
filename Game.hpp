@@ -4,7 +4,6 @@
 #include <SFML/Graphics.hpp>
 #include"CheckerBoard.hpp"
 
-
 class Game
 {
     private:
@@ -14,11 +13,12 @@ class Game
         BoardCoord oldActiveCheckerPosition;
         boost::shared_ptr<Checker> activeChecker;
         bool isMove;
-
-        Checker::CheckerColor activePlayerColor;
+        bool requiredTurn;
+        Checker::Color activePlayerColor;
 
     public:
         Game(){
+            requiredTurn = false;
             activePlayerColor = Checker::WHITE;
             };
 

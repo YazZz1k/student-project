@@ -2,7 +2,7 @@
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(8*50, 8*50), "SFML works!");
+    sf::RenderWindow window(sf::VideoMode(8*50, 8*50), "Checkers", sf::Style::Close);
     window.setFramerateLimit(60);
 
     Game game;

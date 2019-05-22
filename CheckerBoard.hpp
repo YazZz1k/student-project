@@ -52,16 +52,16 @@ class BoardCoord
 class Checker
 {
     public:
-        enum CheckerColor {WHITE, BLACK};
+        enum Color {WHITE, BLACK};
         enum CheckerType  {SIMPLE, QUEEN};
     private:
-        CheckerColor color;
+        Color color;
         CheckerType  type;
         sf::Sprite sprite;
         sf::Texture texture;
 
     public:
-        explicit Checker(CheckerColor color);
+        explicit Checker(Color color);
         ~Checker(){}
 
         void makeQueen();
@@ -70,7 +70,7 @@ class Checker
         void setSpritePosition(sf::Vector2i newPosition);
         void draw(sf::RenderWindow& window);
 
-        CheckerColor getColor()const;
+        Color getColor()const;
     private:
         Checker(const Checker&)        = delete;
         void operator=(const Checker&) = delete;
@@ -80,7 +80,7 @@ class Checker
 class CheckerBoard
 {
     public:
-        enum TurnType { SIMPLE_TURN, INVALID_TURN };//to_do
+        enum TurnType { SIMPLE_TURN, INVALID_TURN, QUEEN_TURN, SIMPLE_KILL_TURN, QUEEN_KILL_TURN};
         struct BoardPiece
         {
             enum Status {OCCUPIED, FREE};
@@ -97,22 +97,34 @@ class CheckerBoard
 
     public:
         CheckerBoard();
+        CheckerBoard(const CheckerBoard&)   = delete;
+        void operator=(const CheckerBoard&) = delete;
+        ~CheckerBoard(){};
+
         void draw(sf::RenderWindow&);
         bool addChecker(Checker* added, int x, int y);
-        boost::shared_ptr<Checker> getChecker(BoardCoord coord);
-        bool isChecker(BoardCoord coord);
-        void doTurn(BoardCoord, BoardCoord);
-        bool moveChecker(BoardCoord, BoardCoord);
+        boost::shared_ptr<Checker> getChecker(BoardCoord);
 
-        //______________________________________________
-        //_______________________________________________
-        bool isValidTurn(BoardCoord, BoardCoord);
+        bool isChecker(const BoardCoord)const;
+        bool moveChecker(const BoardCoord, const BoardCoord);
+        bool deleteChecker(const BoardCoord);
+        BoardCoord getCoordCheckerBetween(BoardCoord, BoardCoord);
+
+        bool isThereRequerdTurnForChecker(BoardCoord);
         TurnType getTurnType(BoardCoord, BoardCoord);
-        //_____________________________________________
-        //___________________________________________
 
     private:
         void _initilizate();
+
+        bool isThereRequiredTurns(Checker::Color);
+        bool isKillTurn(BoardCoord, BoardCoord);
+
+
+        bool isSimpleTurn(BoardCoord, BoardCoord);
+        bool isSimpleKillTurn(BoardCoord, BoardCoord);
+
+        bool isQueenTurn(BoardCoord, BoardCoord);
+        bool isQueenKillTurn(BoardCoord, BoardCoord);
 };
 
 
