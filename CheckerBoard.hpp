@@ -6,7 +6,7 @@
 #include <boost/array.hpp>
 #include <boost/shared_ptr.hpp>
 
-enum{BOARD_WIDTH = 8, BOARD_HEIGHT = 8, CELL_SIZE = 50};
+enum{BOARD_WIDTH = 8, BOARD_HEIGHT = 8, CELL_SIZE = 50, OFFSET = 30};
 
 
 class BoardCoord
@@ -113,6 +113,8 @@ class CheckerBoard
         bool isThereRequerdTurnForChecker(BoardCoord);
         TurnType getTurnType(BoardCoord, BoardCoord);
 
+        void freeBoard();
+        void initCheckers();
     private:
         void _initilizate();
 

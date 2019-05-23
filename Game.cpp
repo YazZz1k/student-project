@@ -8,24 +8,17 @@ void Game::draw(sf::RenderWindow& window)
 }
 
 
-void Game::startGame()
+void Game::startNewGame()
 {
     isMove = false;
+    requiredTurn = false;
+    activePlayerColor = Checker::WHITE;
+    gameOver = false;
+    quantityBlackCheckers = 12;
+    quantityWhiteCheckers = 12;
 
-
-    for(int i=0; i<3; ++i)
-        for(int j=0; j<8; ++j)
-        {
-            if((i+j)%2==0)
-                board.addChecker(new Checker(Checker::WHITE),j,7-i);
-        }
-
-    for(int i=0; i<3; ++i)
-        for(int j=0; j<8; ++j)
-        {
-            if((i+j)%2==1)
-                board.addChecker(new Checker(Checker::BLACK),j,i);
-        }
+    board.freeBoard();
+    board.initCheckers();
 }
 
 
@@ -45,6 +38,9 @@ void Game::passTurn()
 
 void Game::pressedLeftMouse(sf::Vector2i mousePos)
 {
+    if(gameOver) return;
+    if(mousePos.y>=CELL_SIZE*BOARD_HEIGHT) return;
+
     BoardCoord coord = BoardCoord::convertToBoardCoord(mousePos);
 
     if(requiredTurn)
@@ -69,6 +65,8 @@ void Game::pressedLeftMouse(sf::Vector2i mousePos)
 
 void Game::releasedLeftMouse(sf::Vector2i mousePos)
 {
+    if(gameOver) return;
+
     BoardCoord coord = BoardCoord::convertToBoardCoord(mousePos);
 
     if(isMove)
@@ -76,27 +74,23 @@ void Game::releasedLeftMouse(sf::Vector2i mousePos)
         switch(board.getTurnType(oldActiveCheckerPosition, coord))
         {
             case CheckerBoard::INVALID_TURN:
-                std::cout<<"INVALID_TURN"<<std::endl;
                 activeChecker->setSpritePosition(oldActiveCheckerPosition);
                 break;
             case CheckerBoard::SIMPLE_TURN:
-                std::cout<<"SIMPLE_TURN"<<std::endl;
                 board.moveChecker(oldActiveCheckerPosition, coord);
                 passTurn();
                 break;
             case CheckerBoard::QUEEN_TURN:
-                std::cout<<"QUEEN_TURN"<<std::endl;
                 board.moveChecker(oldActiveCheckerPosition, coord);
                 passTurn();
                 break;
             case CheckerBoard::SIMPLE_KILL_TURN:
-                std::cout<<"SIMPLE_KILL_TURN"<<std::endl;
                 board.deleteChecker(board.getCoordCheckerBetween(oldActiveCheckerPosition, coord));
+                decreaseQuantityCheckers();
                 board.moveChecker(oldActiveCheckerPosition, coord);
 
                 if(board.isThereRequerdTurnForChecker(coord))
                 {
-                    std::cout<<"REQURED_TURN"<<std::endl;
                     requiredTurn = true;
                     oldActiveCheckerPosition = coord;
                 }
@@ -108,13 +102,12 @@ void Game::releasedLeftMouse(sf::Vector2i mousePos)
 
                 break;
             case CheckerBoard::QUEEN_KILL_TURN:
-                std::cout<<"QUEEN_KILL_TURN"<<std::endl;
                 board.deleteChecker(board.getCoordCheckerBetween(oldActiveCheckerPosition, coord));
+                decreaseQuantityCheckers();
                 board.moveChecker(oldActiveCheckerPosition, coord);
 
                 if(board.isThereRequerdTurnForChecker(coord))
                 {
-                    std::cout<<"REQURED_TURN"<<std::endl;
                     requiredTurn = true;
                     oldActiveCheckerPosition = coord;
                 }
@@ -133,6 +126,8 @@ void Game::releasedLeftMouse(sf::Vector2i mousePos)
 
 void Game::handleMouse(sf::Vector2i mousePos)
 {
+    if(gameOver) return;
+
     if(isMove)
     {
         activeChecker->setSpritePosition(mousePos);
@@ -140,3 +135,24 @@ void Game::handleMouse(sf::Vector2i mousePos)
 }
 
 
+bool Game::isGameOver()
+{
+    return gameOver;
+}
+
+
+void Game::decreaseQuantityCheckers()
+{
+    switch(activePlayerColor)
+    {
+        case Checker::WHITE:
+            --quantityBlackCheckers;
+            break;
+        case Checker::BLACK:
+            --quantityWhiteCheckers;
+            break;
+    }
+
+    if((quantityWhiteCheckers == 0)||(quantityBlackCheckers == 0))
+        gameOver = true;
+}

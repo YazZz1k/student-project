@@ -9,20 +9,18 @@ class Game
     private:
         CheckerBoard board;
 
-
         BoardCoord oldActiveCheckerPosition;
         boost::shared_ptr<Checker> activeChecker;
         bool isMove;
         bool requiredTurn;
         Checker::Color activePlayerColor;
 
+        bool gameOver;
+        int quantityWhiteCheckers;
+        int quantityBlackCheckers;
     public:
-        Game(){
-            requiredTurn = false;
-            activePlayerColor = Checker::WHITE;
-            };
 
-        void startGame();
+        void startNewGame();
         void passTurn();
 
         void draw(sf::RenderWindow&);
@@ -31,6 +29,9 @@ class Game
         void releasedLeftMouse(sf::Vector2i);
         void handleMouse(sf::Vector2i);
 
+        bool isGameOver();
+    private:
+        void decreaseQuantityCheckers();
 };
 
 

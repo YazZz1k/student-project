@@ -16,7 +16,7 @@ Checker::Checker(Color color):color(color), type(SIMPLE)
     }
 
     sprite.setTexture(texture);
-    sprite.setScale(CELL_SIZE/sprite.getLocalBounds().width,CELL_SIZE/sprite.getLocalBounds().height);
+    sprite.setScale(CELL_SIZE/sprite.getLocalBounds().width, CELL_SIZE/sprite.getLocalBounds().height);
 }
 
 void Checker::makeQueen()
@@ -510,14 +510,46 @@ void CheckerBoard::_initilizate()
 
             if( (i + j) % 2 == 0)
             {
-                m_board[i][j].sprite.setColor(sf::Color(50,50,50));
+                m_board[i][j].sprite.setColor(sf::Color(120,120,120));
             }
             else
             {
-                m_board[i][j].sprite.setColor(sf::Color(100,100,100));
+                m_board[i][j].sprite.setColor(sf::Color(50,50,50));
             }
 
             m_board[i][j].sprite.setPosition(CELL_SIZE*j, CELL_SIZE*i);
         }
     }
 }
+
+
+void CheckerBoard::freeBoard()
+{
+    for(int i=0; i<m_board.size(); ++i)
+    {
+        for(int j=0; j<m_board.size(); ++j)
+        {
+            if(isChecker(BoardCoord::convertToBoardCoord(i, j)))
+                deleteChecker(BoardCoord::convertToBoardCoord(i,j));
+        }
+    }
+}
+
+
+void CheckerBoard::initCheckers()
+{
+    for(int i=0; i<3; ++i)
+        for(int j=0; j<8; ++j)
+        {
+            if((i+j)%2==0)
+                addChecker(new Checker(Checker::WHITE),j,7-i);
+        }
+
+    for(int i=0; i<3; ++i)
+        for(int j=0; j<8; ++j)
+        {
+            if((i+j)%2==1)
+                addChecker(new Checker(Checker::BLACK),j,i);
+        }
+}
+
